@@ -1,0 +1,33 @@
+﻿@model DatabaseContext.Models.Supplier
+@if(TempData["SweetAlertSup"] != null)
+        {
+
+    <div id="swalme2"></div>
+    TempData["SweetAlertSup"] = null;
+}
+
+<form class="form" method="post" action="@Url.Action("Create","Supplier")">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input autocomplete="off" asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <input class="btn-sub" onclick="success()" type="submit" />
+</form>
+    
+@section scripts{
+      <script>
+           //var els = document.getElementById("swalme");
+           var els2 = document.getElementById("swalme2");
+           if (els2!=null){
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Invalid Information!',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      timer:3000
+                    })
+           }
+    </script>
+}

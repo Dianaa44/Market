@@ -1,0 +1,29 @@
+﻿@model DatabaseContext.Models.ProductEntry
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+<hr />
+<div>
+    <div>
+        <form asp-action="Edit">
+            <label asp-for = "SupplierId"> Supplier </label>
+            <select class="btn btn-secondary btn-lg dropdown-toggle dropdown-menu-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" asp-for="SupplierId" asp-items="@ViewBag.suppliers">
+            </select>
+            <div class="pe-date">
+            <label asp-for="Date"></label>
+            <input autocomplete="off" asp-for="Date" class="form-control" />
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Save" onclick="savechanges()" class="btn btn-sub" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+       <a class="back" asp-action="Index"> &lt Back to List</a>
+</div>

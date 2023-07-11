@@ -1,0 +1,18 @@
+﻿@*@model DatabaseContext.Models.Customer
+<div class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"></div>
+            <form asp-action="Edit" asp-controller="Customer">
+                <div class="modal-body">
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name"></span>
+                </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Submit" />
+                <button class="btn btn-light" data-dismiss="modal">Cancel</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>*@

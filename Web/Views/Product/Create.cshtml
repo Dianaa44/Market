@@ -1,0 +1,62 @@
+﻿@model DatabaseContext.Models.Product
+
+@if(TempData["SweetAlertProduct"] != null)
+        {
+
+    <div id="swalme2"></div>
+    TempData["SweetAlertProduct"] = null;
+}
+
+<form class="form" method="post" action="@Url.Action("Create","Product")" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input autocomplete="off" asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+
+
+         <label asp-for="Description"></label>
+         <input autocomplete="off" asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+
+        <label asp-for="Price"></label>
+        <input autocomplete="off" asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+        
+       
+        <label asp-for="Quantity"></label>
+        <input autocomplete="off" asp-for="Quantity" class="form-control" />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+
+
+        <label asp-for="theImage"></label>
+        <input autocomplete="off" asp-for="theImage" class="form-control" />
+        <span asp-validation-for="theImage" class="text-danger"></span>
+        
+    </div>
+    <input class ="btn-sub" onclick="success()" type="submit" />
+</form>
+
+@section scripts{
+
+    <script>
+        function success(){
+            {
+                /*Swal.fire('Created succefully')*/;
+            }
+        }
+    </script>
+        <script>
+           //var els = document.getElementById("swalme");
+           var els2 = document.getElementById("swalme2");
+           if (els2!=null){
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Invalid Information!',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      timer:3000
+                    })
+           }
+    </script>
+}

@@ -1,0 +1,68 @@
+﻿@model DatabaseContext.Models.Order
+
+@if(TempData["SweetAlertOrder"] != null)
+        {
+
+    <div id="swalme2"></div>
+    TempData["SweetAlertOrder"] = null;
+}
+
+<form class="form" method="post" action="@Url.Action("Create","Order")" >
+    <div class="form-group">
+
+         <label asp-for = "CustomerId"> Customer </label>
+         <select class="btn btn-secondary btn-lg dropdown-toggle dropdown-menu-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" asp-for="CustomerId" asp-items="@ViewBag.customers">
+        </select>
+
+        <label asp-for="TotalPrice"></label>
+        <input autocomplete="off" asp-for="TotalPrice" class="form-control" />
+        <span asp-validation-for="TotalPrice" class="text-danger"></span>
+
+
+         <label asp-for="Discount"></label>
+         <input autocomplete="off" asp-for="Discount" class="form-control" />
+        <span asp-validation-for="Discount" class="text-danger"></span>
+
+      
+       
+        <label asp-for="Status"></label>
+        <input autocomplete="off" asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+
+
+        <label asp-for="DeliveryPrice"></label>
+        <input autocomplete="off" asp-for="DeliveryPrice" class="form-control" />
+        <span asp-validation-for="DeliveryPrice" class="text-danger"></span>
+        
+        <label asp-for="DeliveryAddress"></label>
+        <input autocomplete="off" asp-for="DeliveryAddress" class="form-control" />
+        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+        
+    </div>
+       <input class ="btn-sub" onclick="success()" type="submit" />
+</form>
+
+@section scripts{
+
+    <script>
+        function success(){
+            {
+                /*Swal.fire('Created succefully')*/;
+            }
+        }
+    </script>
+        <script>
+           //var els = document.getElementById("swalme");
+           var els2 = document.getElementById("swalme2");
+           if (els2!=null){
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Invalid Information!',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      timer:3000
+                    })
+           }
+    </script>
+}

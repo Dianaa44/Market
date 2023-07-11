@@ -1,0 +1,256 @@
+﻿@model List<DatabaseContext.Models.Customer>
+
+@{
+    ViewData["title"] = "Index";
+    Pager pager = new Pager();
+    int pageNo = 0;
+    if (ViewBag.Pager != null)
+    {
+        pager = ViewBag.Pager;
+        pageNo = pager.CurrentPage;
+    }
+  //  var sortedItems = Model.OrderByDescending(x => x.Id).ToList();
+
+}
+        @if(TempData["SweetAlert"] != null)
+        {
+
+    <div id="swalme"></div> 
+    TempData["SweetAlert"] = null;
+}
+
+
+           @* <script>
+                @*swal.fire({
+                    title:"@TempData["SweetAlert"]",
+                    icon:"@TempData["SweetAlertType"]"
+                });
+                Swal.fire('Created succefully ok')
+            </script>*@
+<div id="msg" class="row my-2">
+    <p>
+
+    </p>
+</div>
+<div class="row my-3">
+    <div class="col-4">
+        <a class="btn btn-primary" href="@Url.Action("Create","Customer")">Create Customer</a>
+    </div>
+    <div class="col-4">
+        @*<input type="text"  class="form-control srch text-success" placeholder="Search..." onkeyup="search(this.value)" />*@
+    </div>
+</div>
+@*<table class="table table-bordered d-none">*@
+<div id ="btnshow">
+<table  class="table table-bordered" >
+    <thead>
+        <tr>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>IsVIP</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+      <tbody>
+              @foreach (var item in Model)
+        {
+             <tr>
+         
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.IsVip</td>
+         
+                <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn  btn-warn">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+    
+                </td>
+            </tr>
+        }
+      </tbody>
+ 
+</table>
+</div>
+@*<button  class="btn btn-warn" onclick="get()">Get Customers</button>*@
+@*<button  class="btn btn-warn" onclick="showButton()">Get Customers</button>*@
+<div class = "container" id="sh-bar">
+    @if (pager.TotalPages > 0)
+    {
+         <ul class = "pagination justify-content-end">
+             @if (pager.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class = "page-link" asp-controller = "Customer" asp-action="Index" asp-route-pg = "1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class = "page-link" asp-controller = "Customer" asp-action="Index" asp-route-pg = "@(pager.CurrentPage - 1)">Previous</a>
+                </li>
+            }
+            @for (var pge = pager.StartPage; pge<= pager.EndPage; pge++)
+            {
+                <li class = "page-item @(pge == pager.CurrentPage ? "active" : "")">
+                    <a class = "page-link" asp-controller = "Customer" asp-action = "Index" asp-route-pg = "@pge"> @pge </a>
+                </li>
+            }
+            @if (pager.CurrentPage < pager.TotalPages)
+            {
+                <li class="page-item">
+                    <a class = "page-link" asp-controller = "Customer" asp-action="Index" asp-route-pg = "@(pager.CurrentPage + 1)">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class = "page-link" asp-controller = "Customer" asp-action="Index" asp-route-pg = "@(pager.TotalPages)">Last</a>
+                </li>
+            }
+            
+        </ul>
+    }
+
+</div>
+
+
+@section Scripts {
+    <script>
+        
+        let elementRetrieved = false;
+        function get() {
+            if(!elementRetrieved){
+                elementRetrieved = true;
+            let i = 10;
+            let string = `${i}`;
+            $.ajax({
+                url: '@Url.Action("GetOrders", "Order")',
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function() {
+                    let timerInterval
+                    Swal.fire({
+                      title: 'Loading...',
+                      //html: 'I will close in <b></b> milliseconds.',
+                      timer: 1000,
+                      timerProgressBar: true,
+                      didOpen: () => {
+                        Swal.showLoading()
+                        const b = Swal.getHtmlContainer().querySelector('b')
+                        timerInterval = setInterval(() => {
+                          b.textContent = Swal.getTimerLeft()
+                        }, 100)
+                      },
+                      willClose: () => {
+                        clearInterval(timerInterval)
+                      }
+                    }).then((result) => {
+                      if (result.dismiss === Swal.DismissReason.timer) {
+                        console.log('I was closed by the timer')
+                      }
+                    });
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $.each(response.data, (index, item) => {
+                            $('pge').append(` <tr>
+                                                    <td>${item.firstName}</td>
+                                                    <td>${item.lastName}</td>
+                                                    <td>
+                                                   <a asp-action="Edit" asp-route-id="${item.id}" class="btn  btn-warn">Edit</a>
+                                                   <a asp-action="Delete" asp-route-id="${item.id}" class="btn btn-danger">Delete</a>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-warning" onclick="window.location.href = '/Edit/' + item.id">Edit</button>
+                                                        <button class="btn btn-danger">Delete</button>
+                                                    </td>
+                                                </tr>`)
+                        })
+                    }
+                    else {
+                        alert(response.message)
+                    }
+                },
+                error: function(msg) {
+                    console.error(msg);
+                }
+            })
+        }
+        }
+    </script>
+    <script>
+        function search(val) {
+            $.ajax({
+                url: '@Url.Action("Search", "Customer")' + '?value=' + val,
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function() {
+                    $('tbody').html('')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $.each(response.data, (index, item) => {
+                            $('tbody').append(` <tr>
+                                                    <td>${item.id}</td>
+                                                    <td>${item.firstName}</td>
+                                                    <td>${item.lastName}</td>
+                                                    <td>${item.isVip}</td>
+                                                    <td>
+                                                        <button class="btn btn-warn" onclick="editItem('${item.id}')">Edit</button>
+                                                        <button class="btn btn-danger">Delete</button>
+                                                    </td>
+                                                </tr>`)
+                        })
+                    }
+                    else {
+                        alert(response.message)
+                    }
+                },
+                error: function(msg) {
+                    console.error(msg);
+                }
+            })
+        }
+    </script>
+    <script>
+        function showButton(){
+           var el = document.getElementById("btnshow");
+           el.style.display = "table";
+           var el2 = document.getElementById("sh-bar");
+           el2.style.display = "block";
+        }
+    </script>
+    <script>
+           var els = document.getElementById("swalme");
+           //var els2 = document.getElementById("swalme2");
+           if (els!=null){
+           Swal.fire({
+                      icon: 'success',
+                      title: 'Saved',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      timer:3000
+                    })
+           }
+           //else if(els2 != null){
+           // Swal.fire('OOOOOOPS succefully');
+           //}
+    </script>
+
+    <script>
+
+    function getAllOrders() {
+    $.ajax({
+        url: "/customer/GetAllCustomers",
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+            // Handle the retrieved orders data here
+            console.log(data);
+        },
+        error: function (xhr, status, error) {
+            // Handle the error here
+            console.log("Error retrieving orders: " + error);
+        }
+    });
+    }
+
+    </script>
+
+}   
+
+@*<div class = "container" id="sh-bar" style = "display : none">*@

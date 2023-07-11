@@ -1,0 +1,116 @@
+﻿@using System.IO
+@using Microsoft.AspNetCore.Http
+@model DatabaseContext.Models.Product
+
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div  class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+                 
+
+                <label asp-for="Description" class="control-label"></label>
+                <input  asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+
+                <label asp-for="Price"  class="control-label"></label>
+                <input  asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+        
+       
+                <label asp-for="Quantity"  class="control-label"></label>
+                <input  asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+
+                <label class="d-none" asp-for="Image"  class="control-label"></label>
+                <input class="d-none"  asp-for="Image" class="form-control" />
+                <span class="d-none" asp-validation-for="Image" class="text-danger"></span>
+
+                
+
+
+
+
+      @*         @{
+       
+                byte[] fileBytes = File.ReadAllBytes("wwwroot/Images");
+                MemoryStream ms = new MemoryStream(fileBytes);
+                @Model.theImage Equals(new FormFile(ms, 0, fileBytes.Length, @Model.Image, @Model.Image));
+           
+     }*@
+                <img src="~/Images/@Model.Image" asp-append-version="true" width="60" height="60" id="preview"></img>
+
+
+               <label class="d-none" asp-for="Image" class="control-label"></label>
+               <input class="d-none" asp-for="Image" class="form-control" ></input>
+               <span class="d-none" asp-validation-for="Image" class="text-danger"></span>
+        
+
+
+               <label  class="control-label"></label>
+               <input asp-for="theImage"  class="form-control"id="theNewImage" onchange="previewImage(event)"/>
+               <span   class="text-danger"></span>
+        
+               
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Save" onclick="savechanges()" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script>
+   function previewImage(event) {
+    var input = event.target;
+    var reader = new FileReader();
+
+    reader.onload = function() {
+        var img = document.getElementById("preview");
+        img.src = reader.result;
+    }
+
+    reader.readAsDataURL(input.files[0]);
+}
+</script>
+
+
+@*
+<script>
+        function savechanges() {
+                    Swal.fire({
+                      title: 'Do you want to save the changes?',
+                      showDenyButton: true,
+                      showCancelButton: true,
+                      confirmButtonText: 'Save',
+                      denyButtonText: `Don't save`,
+                    }).then((result) => {
+                      /* Read more about isConfirmed, isDenied below */
+                      if (result.isConfirmed) {
+                        Swal.fire('Saved!', '', 'success')
+                      } else if (result.isDenied) {
+                        Swal.fire('Changes are not saved', '', 'info')
+                      }
+                    })
+                }
+                
+    </script>*@

@@ -1,0 +1,32 @@
+﻿@model DatabaseContext.Models.ProductEntry
+@if(TempData["SweetAlertPE"] != null)
+        {
+
+    <div id="swalme2"></div>
+    TempData["SweetAlertPE"] = null;
+}
+<form  method="post" action="@Url.Action("Create","ProductEntry")">
+    <div class="form-group">
+    <label asp-for = "SupplierId"> Supplier </label>
+    <select class="btn slc btn-lg dropdown-toggle dropdown-menu-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" asp-for="SupplierId" asp-items="@ViewBag.suppliers">
+    @*<select data-live-search="true" asp-for="SupplierId" asp-items="@ViewBag.suppliers">*@
+    </select>
+    <label asp-for="Date"></label>
+    <input autocomplete="off" asp-for="Date" class="form-control" />
+    </div>
+    <input class="btn btn-sub " type="submit" />
+</form>
+      <script>
+           //var els = document.getElementById("swalme");
+           var els2 = document.getElementById("swalme2");
+           if (els2!=null){
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Invalid Information!',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      timer:3000
+                    })
+           }
+    </script>

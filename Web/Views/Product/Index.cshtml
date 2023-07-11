@@ -1,0 +1,179 @@
+﻿@using System.IO
+@using Microsoft.AspNetCore.Http
+@model List<DatabaseContext.Models.Product>
+
+
+@if(TempData["SweetAlertProduct"] != null)
+{
+
+     <div id="swalme"></div>
+     TempData["SweetAlertProduct"] = null;
+}
+<div class="row my-3">
+    <div class="col-4">
+        <a class="btn btn-primary" href="@Url.Action("Create","Product")">Create Product</a>
+    </div>
+    <div class="col-4">
+        <input type="text" class="form-control text-success" placeholder="Search..." onkeyup="search(this.value)" />
+    </div>
+</div>
+<div id ="btnshow" style = " display : none" >
+<table class="table table-bordered">
+    <thead>
+        <tr>
+@*            <th>Id</th>
+*@            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+             <tr>
+                @*<td>@item.Id</td>*@
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.Price</td>
+                <td>@item.Quantity</td>
+                <td>
+                    <img src="~/Images/@item.Image" asp-append-version="true" width="40" height="40" id=@item.Id></img>
+                </td>
+                <td>
+
+   
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn  btn-warn">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>
+<button  class="btn btn-warn" onclick="showButton()">Get Products</button>
+
+<div id="modal-container">
+
+</div>
+
+@section Scripts {
+    <script>
+        function get() {
+            let i = 10;
+            let string = `${i}`;
+            $.ajax({
+                url: '@Url.Action("GetProducts", "Product")',
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function() {
+                    alert('Loading....');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $.each(response.data, (index, item) => {
+                            $('tbody').append(` <tr>
+                                                    <td>${item.id}</td>
+                                                    <td>${item.name}</td>
+                                                    <td>
+                                                        <button class="btn btn-warning" onclick="showModal('${item.id}')">Edit</button>
+                                                        <button class="btn btn-danger">Delete</button>
+                                                    </td>
+                                                </tr>`)
+                        })
+                    }
+                    else {
+                        alert(response.message)
+                    }
+                },
+                error: function(msg) {
+                    console.error(msg);
+                }
+            })
+        }
+    </script>
+    <script>
+        function search(val) {
+            $.ajax({
+                url: '@Url.Action("Search", "Product")' + '?value=' + val,
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function() {
+                    $('tbody').html('')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $.each(response.data, (index, item) => {
+                            var imageUrl = '@Url.Content("~/Images/")' + item.image;
+                            var editUrl = '@Url.Action("Edit", "Product")' + '?id=' + item.id;
+                            var deleteUrl = '@Url.Action("Delete", "Product")' + '?id=' + item.id;
+                            $('tbody').append(` <tr>
+                                                    <td>${item.name}</td>
+                                                    <td>${item.description}</td>
+                                                    <td>${item.price}</td>
+                                                    <td>${item.quantity}</td>
+                                                    <td>
+                                                    <img src="${imageUrl}" width="40" height="40"></img>
+                                                    </td>
+                                                    <td>
+                                                         <a href="${editUrl}" class="btn  btn-warn">Edit</a>
+                                                         <a href="${deleteUrl}"  class="btn btn-danger">Delete</a>
+                                                    </td>
+                                                </tr>`)
+                        })
+                    }
+                    else {
+                        alert(response.message)
+                    }
+                },
+                error: function(msg) {
+                    console.error(msg);
+                }
+            })
+        }
+    </script>
+    <script>
+        function showModal(id) {
+            alert(id);
+            $.ajax({
+                url: '@Url.Action("GetModal", "Product")' + "?id=" + parseInt(id),
+                type: 'GET',
+                dataType: 'html',
+                success: function(response) {
+                    $('#modal-container').html(response); 
+                    $('.modal').modal('show');
+                    $.validator.unobtrusive.parse('form-id');
+                },
+                error: function(msg) {
+                    console.error(msg);
+                }
+            })
+        }
+    </script>
+
+    <script>
+        function showButton(){
+           var el = document.getElementById("btnshow");
+           el.style.display = "table";
+        }
+    </script>
+    <script>
+           var els = document.getElementById("swalme");
+           //var els2 = document.getElementById("swalme2");
+           if (els!=null){
+           Swal.fire({
+                      icon: 'success',
+                      title: 'Saved',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      timer:3000
+                    })
+           }
+           //else if(els2 != null){
+           // Swal.fire('OOOOOOPS succefully');
+           //}
+    </script>
+}   
+ 

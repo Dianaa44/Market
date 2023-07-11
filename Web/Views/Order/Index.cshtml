@@ -1,0 +1,198 @@
+﻿@using DatabaseContext.Repos
+@using DatabaseContext.UnitOfWork
+@model List<DatabaseContext.Models.Order>
+
+
+@if(TempData["SweetAlertOrder"] != null)
+{
+
+    <div id="swalme"></div>
+    TempData["SweetAlertOrder"] = null;
+}
+<div id="msg" class="row my-2">
+    <p>
+        @TempData["Message"]
+    </p>
+</div>
+<div class="row my-3">
+    <div class="col-4">
+        <a class="btn btn-primary" href="@Url.Action("Create","Order")">Create Order</a>
+    </div>
+    <div class="col-4">
+        @*<input type="text" class="form-control text-success" placeholder="Search..." onkeyup="search(this.value)" />*@
+    </div>
+</div>
+<div id ="btnshow" style = " display : none" >
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            @*<th>Id</th>*@
+            <th>Customer</th>
+            <th>Status</th>
+            <th>TotalPrice</th>
+            <th>Discount</th>
+            <th>DeliveryPrice</th>
+            <th>DeliveryAddress</th>
+            <th>Date</th>
+            <th>OrderItems</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+             <tr>
+            <td>@item.customer.FirstName</td>
+            <td>@item.Status</td>
+            <td>@item.TotalPrice</td>
+            <td>@item.Discount</td>
+            <td>@item.DeliveryPrice</td>
+            <td>@item.DeliveryAddress</td>
+            <td>@item.CreationDate</td>
+                <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn  btn-warn">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warn">Details</a>
+                </td>
+            </tr>
+ }
+    </tbody>
+</table>
+</div>
+<button  class="btn btn-warn" onclick="showButton()">Get Orders</button>
+<button  class="btn btn-danger" onclick="get()">Get Orders</button>
+
+<label for="date-input">Select a start date:</label>
+<input id="str-date"type="date" id="date-input" name="date">
+
+<label for="date-input">Select an end date:</label>
+<input id="end-date"type="date" id="date-input" name="date">
+<button  class="btn btn-warning" onclick="datefun()">Get d Orders</button>
+
+<div id="modal-container">
+
+</div>   
+
+@section Scripts {
+
+    <script>
+        function showButton(){
+           var el = document.getElementById("btnshow");
+           el.style.display = "table";
+        }
+    </script>
+
+    <script>
+           var els = document.getElementById("swalme");
+           //var els2 = document.getElementById("swalme2");
+           if (els!=null){
+           Swal.fire({
+                      icon: 'success',
+                      title: 'Saved',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      timer:3000
+                    })
+           }
+           //else if(els2 != null){
+           // Swal.fire('OOOOOOPS succefully');
+           //}
+    </script>
+
+     <script>
+        function get() {
+            let i = 10;
+            let string = `${i}`;
+            $.ajax({
+                url: '@Url.Action("GetAllorders", "order")',
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function() {
+                    alert('Loading....');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $.each(response.data, (index, item) => {
+                            $('tbody').append(` <tr>
+                                                    <td>${item.totalPrice}</td>
+                                                    <td>${item.discount}</td>
+                                                    <td>${item.deliveryPrice}</td>
+                                                    
+                                                    <td>
+                                                        <a href="/Order/Edit?id=${item.id}" class="btn  btn-warn">Edit</a>
+                                                        <a href="/Order/Delete?id=${item.id}" class="btn btn-danger">Delete</a>
+                                                        <a href="/Order/Details?id=${item.id}" class="btn btn-warn">Details</a>
+                                                    </td>
+
+                     
+                                                </tr>`)
+                        })
+                    }
+                    else {
+                        alert(response.message)
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+            console.log("Error Has Occured: " + errorThrown);
+            alert("Error: " + jqXHR.responseText);
+
+            })
+        }
+    </script>
+
+            //    let endDate = '2023-06-03' ;
+            //let startDate = '2023-06-01' ;
+
+    <script>
+
+    function datefun() {
+             var str = $('#str-date').val();
+             var end = $('#end-date').val();
+
+            let endDate = end ;
+            let startDate = str ;
+            
+            let i = 10;
+            let string = `${i}`;
+            $.ajax({
+                url: '@Url.Action("GetAllordersAtDate", "order")',
+                type: 'GET',
+                data: {
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                dataType: 'json',
+                beforeSend: function() {
+                    alert('Loading At Date....');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $.each(response.data, (index, item) => {
+                            $('tbody').append(` <tr>
+                                                   
+                                                    <td>${item.totalPrice}</td>
+                                                    <td>${item.discount}</td>
+                                                    <td>${item.deliveryPrice}</td>
+                                                    
+                                                    <td>
+                                                        <a href="/Order/Edit?id=${item.id}" class="btn  btn-warn">Edit</a>
+                                                        <a href="/Order/Delete?id=${item.id}" class="btn btn-danger">Delete</a>
+                                                        <a href="/Order/Details?id=${item.id}" class="btn btn-warn">Details</a>
+                                                    </td>
+
+                     
+                                                </tr>`)
+                        })
+                    }
+                    else {
+                        alert(response.message)
+                    }
+                },
+                error: function() {
+                    console.log("Error Has Occured");
+                }
+            })
+        }
+
+    </script>
+}   

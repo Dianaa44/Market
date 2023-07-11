@@ -1,0 +1,250 @@
+﻿@model DatabaseContext.Models.Order
+
+@if (TempData["SweetAlertOrder"] != null)
+{
+
+    <div id="swalme2"></div>
+    TempData["SweetAlertOrder"] = null;
+}
+
+<form class="form" method="post" action="@Url.Action("Create","Order")" >
+    <div class="form-group">
+
+        <label asp-for = "CustomerId"> Customer </label>
+        <select class="btn btn-secondary btn-lg dropdown-toggle dropdown-menu-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" asp-for="CustomerId" asp-items="@ViewBag.customers">
+        </select>
+
+        <div class = "vip-person-div"> Is VIP Person</div>
+        <input class="is-vip-person"  style="pointer-events: none;  border: none" autocomplete="off" class="form-control" />
+
+        <label asp-for="Discount"></label>
+        <input id="my-div1" autocomplete="off" asp-for="Discount" class="form-control discount" />
+        <span asp-validation-for="Discount" class="text-danger"></span>
+      
+       
+        <label asp-for="Status"></label>
+        <input autocomplete="off" asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+
+
+        <label asp-for="DeliveryPrice"></label>
+        <input id="my-div2" autocomplete="off" asp-for="DeliveryPrice" class="form-control" />
+        <span asp-validation-for="DeliveryPrice" class="text-danger"></span>
+        
+        <label asp-for="DeliveryAddress"></label>
+        <input autocomplete="off" asp-for="DeliveryAddress" class="form-control" />
+        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+
+        
+    </div>
+
+    <div id ="btnshow"  >
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Product name</th>
+                <th>Product Description</th>
+                <th>Product Price</th>
+                <th>Product Image</th>
+                <th>Product Order Q</th>
+            </tr>
+        </thead>
+        <tbody>
+             
+            @foreach (var item in ViewBag.products)
+            {
+                 <tr>
+    
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.Price</td>
+                <td>
+                  <img src="~/Images/@item.Image" asp-append-version="true" width="40" height="40"></img></td>
+                <td>
+    
+                <input id="@item.Id" name = "@item.Id quantity" type="number" />
+                <input type="hidden" id="id_@item.Id" value="@item.Id" />
+                <input type="hidden" id="quantity_@item.Id" value="@item.Quantity" />
+                <input type="hidden" id="alertquantity_@item.Id" value="@item.AlertQuantity" />
+                <input type="hidden" id="price_@item.Id" value="@item.Price" />
+                <input type="hidden" name="listIds" id="listIds" value="" />
+                <input type="hidden" name="listQuantities" id="listQuantities" value="" />
+                <button type="button" class=" btn-warn">add</button>
+                </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    @*<label asp-for="DeliveryPrice"></label>*@
+   @* <input class="total-price" style="pointer-events: none;  border: 1px solid blue">*@
+        
+        <input class="total-price" id="total-price"  style="pointer-events: none;  border: 1px solid blue" autocomplete="off" asp-for="TotalPrice" class="form-control" />
+        <span asp-validation-for="TotalPrice" class="text-danger"></span>
+        <button type="button" class=" calcAll">Calculate Total</button>
+        <input class="final-price"  style="display: div ; pointer-events: none;  border: 1px solid blue" autocomplete="off" class="form-control" />
+        
+
+
+    </input>
+    </div>
+    <input id = "submit-btn" class ="btn-sub" onclick="success()" type="submit" />
+    
+</form>
+
+@section scripts{
+
+<script>
+    var els2 = document.getElementById("swalme2");
+    if (els2!=null){
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Invalid Information!',
+          showCancelButton: false,
+          showConfirmButton: false,
+          timer:3000
+        })
+    }
+</script>
+
+<script>
+    var listIds = [];
+    var listQuantities = [];
+    var listPrices = [];
+    var tot_price = 0;
+
+    $(document).ready(function() {
+        $('.btn-warn').click(function() {
+            var id = $(this).closest('td').find('input[type="number"]').attr('id');
+            //var product_quantity = $('#quantity_' + id).val();
+            var quantity = $(this).closest('td').find('input[type="number"]').val();
+            if (quantity < 0){
+                Swal.fire(
+                'Invalid Input!',
+                "Quantity can't be negative!",
+                'warning'
+                )
+                $(this).closest('td').find('input[type="number"]').val('').css('border', '1px solid red');
+                return; 
+            }
+            var product_quantity = $('#quantity_' + id).val();
+       
+            var alert_quantity = $('#alertquantity_' + id).val();
+    
+            var price = $('#price_' + id).val();
+  
+            if (product_quantity - quantity >= alert_quantity ) {
+                var index = $.inArray(id, listIds);
+                if (index !== -1 && quantity>=0 ) {
+                    console.log("Element exists at position " + index);
+                    console.log("list item: " + listPrices[index]);
+                    tot_price -= listPrices[index] * listQuantities[index];
+                    console.log("total price: " + tot_price);
+                    listIds.splice(index, 1);
+                    listQuantities.splice(index, 1);
+                    listPrices.splice(index, 1);
+                    $('.total-price').val(tot_price);
+                }
+                listIds.push(id);
+                listQuantities.push(quantity);
+                listPrices.push(price);
+                tot_price += price*quantity;
+                $('.total-price').val(tot_price);
+               
+                if (quantity == 0){
+                    var ind = $.inArray(quantity, listQuantities);
+                    listIds.splice(ind, 1);
+                    listQuantities.splice(ind, 1);
+    
+                }
+    
+                $(this).closest('td').find('input[type="number"]').css('border', '1px solid black');
+            } else {
+                $(this).closest('td').find('input[type="number"]').val('').css('border', '1px solid red');
+                //alert("There is NO ENOUGH quantity!");
+                Swal.fire({
+                              icon: 'error',
+                              title: 'Oops...',
+                              text: 'NO ENOUGH Quantity!',
+                              showCancelButton: false,
+                              showConfirmButton: false,
+                              timer:2000
+                            })
+                }
+    
+    
+    });
+     
+    $('.btn-sub').click(function() {
+    // Set the values of the hidden input fields to the current values of listIds and listQuantities
+    $('#listIds').val(JSON.stringify(listIds));
+    $('#listQuantities').val(JSON.stringify(listQuantities));
+  
+    // Submit the form
+    $('form').submit();
+        });
+    });
+
+</script>
+
+<script>
+var discountValue = 1; 
+var delivaryPrice = 0;
+var finalPrice;
+    // when an option is selected from the CustomerId dropdown menu
+$('#CustomerId').change(function () {
+   var selectedOption = $(this).children("option:selected");
+   var customerId = selectedOption.val();
+   
+   // make an AJAX call to retrieve customer properties
+   $.ajax({
+      url: '/Customer/GetCustomer',
+      type: 'GET',
+      data: { customerId: customerId },
+      success: function (customer) {
+         // populate customer properties in other form fields
+         $('#CustomerFirstName').val(customer.f_name);
+         $('#CustomerLastName').val(customer.l_name);
+         $('#CustomerIsVip').val(customer.is_vip);
+         $('.is-vip-person').val(customer.is_vip ? 'Yes' : 'No');
+         $('.discount').val(customer.is_vip ? '25' : '0');
+        // if (customer.is_vip) {
+        // discountValue = 0.75;
+        //     $('.final-price').val(0.75*tot_price);
+        //} else {
+        //     discountValue = 1;
+        //}
+
+      },
+      error: function () {
+         alert('Error retrieving customer information.');
+      }
+   });
+});
+
+</script>
+<script>
+
+  $(document).ready(function() {
+   $('.calcAll').click(function() {
+       
+      var divValue = $('#my-div1').val();
+      var divValueText = $('#my-div2').val();
+      var tot_price = $('#total-price').val();
+      var fin_price = 0;
+      
+      console.log("discount" + divValue); // This is the value of my div.
+
+     console.log("deliver" + divValueText); // This is the value of my div.
+     fin_price = tot_price - (tot_price * divValue / 100);
+     fin_price += parseFloat(divValueText);
+
+
+     $('.final-price').val(fin_price);
+
+   });
+});
+</script>
+
+}

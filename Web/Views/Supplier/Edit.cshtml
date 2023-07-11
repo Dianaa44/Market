@@ -1,0 +1,48 @@
+﻿@model DatabaseContext.Models.Supplier
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<hr />
+<div>
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Save" onclick="savechanges()" class="btn btn-sub" />
+            </div>
+        </form>
+</div>
+
+<div>
+        <a class="back" asp-action="Index"> &lt Back to List</a>
+</div>
+@*
+<script>
+        function savechanges() {
+                    Swal.fire({
+                      title: 'Do you want to save the changes?',
+                      showDenyButton: true,
+                      showCancelButton: true,
+                      confirmButtonText: 'Save',
+                      denyButtonText: `Don't save`,
+                    }).then((result) => {
+                      /* Read more about isConfirmed, isDenied below */
+                      if (result.isConfirmed) {
+                        Swal.fire('Saved!', '', 'success')
+                      } else if (result.isDenied) {
+                        Swal.fire('Changes are not saved', '', 'info')
+                      }
+                    })
+                }
+                
+    </script>*@

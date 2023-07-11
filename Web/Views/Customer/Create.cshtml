@@ -1,0 +1,59 @@
+﻿@model DatabaseContext.Models.Customer
+
+
+@if(TempData["SweetAlert"] != null)
+        {
+
+    <div id="swalme2"></div>
+    TempData["SweetAlert"] = null;
+}
+<form class="form" method="post" action="@Url.Action("Create","Customer")">
+    <div class="form-group">
+        <label asp-for="FirstName"></label>
+        <input autocomplete="off" asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    
+        <label asp-for="LastName"></label>
+        <input autocomplete="off" asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+        
+      @*  <label class="d-none" asp-for="IsVip"></label>
+        <input class="d-none" autocomplete="off" asp-for="IsVip" class="form-control" />
+*@
+
+
+         <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="is-vip" name="IsVip" asp-for="IsVip">
+            <label class="form-check-label" for="is-vip">Is VIP</label>
+        </div>
+
+
+
+    </div>
+    <input class ="btn-sub" onclick="success()" type="submit" />
+</form>
+
+@section scripts{
+
+    <script>
+        function success(){
+            {
+                /*Swal.fire('Created succefully')*/;
+            }
+        }
+    </script>
+        <script>
+           //var els = document.getElementById("swalme");
+           var els2 = document.getElementById("swalme2");
+           if (els2!=null){
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Invalid Information!',
+                      showCancelButton: false,
+                      showConfirmButton: false,
+                      timer:3000
+                    })
+           }
+    </script>
+}
